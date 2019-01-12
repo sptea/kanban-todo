@@ -1,0 +1,6 @@
+{
+  "editor.formatOnSave": true,
+
+  "html.format.enable": true,
+  "javascript.format.enable": true
+}
