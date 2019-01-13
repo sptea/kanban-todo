@@ -23,16 +23,16 @@ export const mutations = {
   deleteTileByRowId(state, rowId) {
     state.tileList = state.tileList.filter(tile => tile.rowId !== rowId)
   },
-  createTile(state, createTileData) {
+  createTile(state, tileCreationData) {
     let tileId = null
     do {
-      tileId = Util.createRandomString(8)
+      tileId = Util.createRandomString(5, tileCreationData.originToken)
     } while (state.tileList.filter(tile => tile.tileId === tileId).length !== 0)
 
     state.tileList.push({
-      title: createTileData.title,
+      title: tileCreationData.title,
       tileId: tileId,
-      rowId: createTileData.rowId,
+      rowId: tileCreationData.rowId,
       body: ''
     })
   }
@@ -54,7 +54,7 @@ export const actions = {
   deleteTileByRowId(context, rowId) {
     context.commit('deleteTileByRowId', rowId)
   },
-  createTile(context, createTileData) {
-    context.commit('createTile', createTileData)
+  createTile(context, tileCreationData) {
+    context.commit('createTile', tileCreationData)
   }
 }

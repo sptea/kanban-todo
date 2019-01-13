@@ -20,14 +20,14 @@ export const mutations = {
   deleteRowByRowId(state, rowId) {
     state.rowList = state.rowList.filter(row => row.rowId !== rowId)
   },
-  createRow(state, rowTitle) {
+  createRow(state, rowCreationData) {
     let rowId = null
     do {
-      rowId = Util.createRandomString(8)
+      rowId = Util.createRandomString(5, rowCreationData.originToken)
     } while (state.rowList.filter(row => row.rowId === rowId).length !== 0)
 
     state.rowList.push({
-      title: rowTitle,
+      title: rowCreationData.rowTitle,
       rowId: rowId
     })
   }
@@ -49,7 +49,7 @@ export const actions = {
   deleteRowByRowId(context, rowId) {
     context.commit('deleteRowByRowId', rowId)
   },
-  createRow(context, rowTitle) {
-    context.commit('createRow', rowTitle)
+  createRow(context, rowCreationData) {
+    context.commit('createRow', rowCreationData)
   }
 }

@@ -23,10 +23,12 @@ export default {
   async asyncData({ store }) {
     const testRowList = await GetTestData.getTestRowList()
     const testTileList = await GetTestData.getTestTileList()
+    const originToken = await GetTestData.getTestOriginToken()
     testRowList.forEach(row => (row.isOver = false))
 
     store.dispatch('row/setRowList', testRowList)
     store.dispatch('tile/setTileList', testTileList)
+    store.dispatch('access/setOriginToken', originToken)
   }
 }
 </script>

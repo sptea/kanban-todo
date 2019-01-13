@@ -2,7 +2,7 @@
   <div>
     <v-toolbar dense>
       <v-spacer/>
-      <v-btn color="deep-orange" @click="createRowDialog=true" dark>Add row</v-btn>
+      <v-btn color="deep-orange" @click="rowCreationDialog=true" dark>Add row</v-btn>
     </v-toolbar>
 
     <v-divider/>
@@ -21,10 +21,10 @@
       <v-toolbar color="deep-orange" dark dense>
         <v-toolbar-title>{{row.title}}</v-toolbar-title>
         <v-spacer/>
-        <v-btn icon @click="createTileDialog=true;createTileData.rowId=row.rowId">
+        <v-btn icon @click="tileCreationDialog=true;tileCreationData.rowId=row.rowId">
           <v-icon>add_circle_outline</v-icon>
         </v-btn>
-        <v-btn icon @click="deleteDialog=true;deleteDialogData=row">
+        <v-btn icon @click="rowDeletionDialog=true;rowDeletionDialogData=row">
           <v-icon>delete_outline</v-icon>
         </v-btn>
       </v-toolbar>
@@ -36,46 +36,46 @@
       />
     </v-card>
 
-    <v-dialog v-model="createRowDialog" persistent max-width="600px">
+    <v-dialog v-model="rowCreationDialog" persistent max-width="600px">
       <v-card>
         <v-card-title>
           <span class="headline">Add Row</span>
         </v-card-title>
         <v-card-text>
-          <v-text-field label="Title" v-model="createRowData.rowTitle"/>
+          <v-text-field label="Title" v-model="rowCreationData.rowTitle"/>
         </v-card-text>
         <v-card-actions>
           <v-spacer/>
-          <v-btn color="blue darken-1" flat @click="createRow();createRowDialog = false">Create</v-btn>
-          <v-btn color="blue darken-1" flat @click="createRowDialog = false">Cancel</v-btn>
+          <v-btn color="blue darken-1" flat @click="createRow();rowCreationDialog = false">Create</v-btn>
+          <v-btn color="blue darken-1" flat @click="rowCreationDialog = false">Cancel</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="createTileDialog" persistent max-width="600px">
+    <v-dialog v-model="tileCreationDialog" persistent max-width="600px">
       <v-card>
         <v-card-title>
           <span class="headline">Add Task</span>
         </v-card-title>
         <v-card-text>
-          <v-text-field label="Title" v-model="createTileData.title"/>
+          <v-text-field label="Title" v-model="tileCreationData.title"/>
         </v-card-text>
         <v-card-actions>
           <v-spacer/>
-          <v-btn color="blue darken-1" flat @click="createTile();createTileDialog = false">Create</v-btn>
-          <v-btn color="blue darken-1" flat @click="createTileDialog = false">Cancel</v-btn>
+          <v-btn color="blue darken-1" flat @click="createTile();tileCreationDialog = false">Create</v-btn>
+          <v-btn color="blue darken-1" flat @click="tileCreationDialog = false">Cancel</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="deleteDialog" max-width="290">
+    <v-dialog v-model="rowDeletionDialog" max-width="290">
       <v-card>
         <v-card-title class="headline">Confirm</v-card-title>
-        <v-card-text>Delete {{ deleteDialogData.title }} ?</v-card-text>
+        <v-card-text>Delete {{ rowDeletionDialogData.title }} ?</v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="green darken-1" flat="flat" @click="deleteRow();deleteDialog = false">Delete</v-btn>
-          <v-btn color="green darken-1" flat="flat" @click="deleteDialog = false">Cancel</v-btn>
+          <v-btn color="green darken-1" flat="flat" @click="deleteRow();rowDeletionDialog = false">Delete</v-btn>
+          <v-btn color="green darken-1" flat="flat" @click="rowDeletionDialog = false">Cancel</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -91,12 +91,12 @@ export default {
   },
   data() {
     return {
-      createRowDialog: false,
-      createRowData: {},
-      deleteDialog: false,
-      deleteDialogData: {},
-      createTileDialog: false,
-      createTileData: {}
+      rowCreationDialog: false,
+      rowCreationData: { oritinToken: null },
+      rowDeletionDialog: false,
+      rowDeletionDialogData: {},
+      tileCreationDialog: false,
+      tileCreationData: { oritinToken: null }
     }
   },
   computed: {
@@ -136,18 +136,23 @@ export default {
     deleteRow() {
       this.$store.dispatch(
         'tile/deleteTileByRowId',
-        this.deleteDialogData.rowId
+        this.rowDeletionDialogData.rowId
       )
-      this.$store.dispatch('row/deleteRowByRowId', this.deleteDialogData.rowId)
-      this.deleteDialogData = {}
+      this.$store.dispatch(
+        'row/deleteRowByRowId',
+        this.rowDeletionDialogData.rowId
+      )
+      this.rowDeletionDialogData = {}
     },
     createRow() {
-      this.$store.dispatch('row/createRow', this.createRowData.rowTitle)
-      this.createRowData = {}
+      this.rowCreationData.originToken = this.$store.state.access.originToken
+      this.$store.dispatch('row/createRow', this.rowCreationData)
+      this.rowCreationData = {}
     },
     createTile() {
-      this.$store.dispatch('tile/createTile', this.createTileData)
-      this.createTileData = {}
+      this.tileCreationData.originToken = this.$store.state.access.originToken
+      this.$store.dispatch('tile/createTile', this.tileCreationData)
+      this.tileCreationData = {}
     }
   }
 }

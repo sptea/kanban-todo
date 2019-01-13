@@ -6,5 +6,8 @@ export default {
   },
   async getTestTileList() {
     return (await axios.get('/testTileList.json')).data
+  },
+  async getTestOriginToken() {
+    return (await axios.get('/testData.json')).data.originToken
   }
 }

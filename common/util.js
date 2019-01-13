@@ -1,9 +1,13 @@
 export default {
-  createRandomString(length) {
-    const charSet = 'abcdefghijklmnopqrstuvwxyz0123456789'
+  createRandomString(length, originToken) {
+    const charSet =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
     let returnString = ''
-    for (var i = 0; i < length; i++)
+    for (let i = 0; i < length; i++)
       returnString += charSet[Math.floor(Math.random() * charSet.length)]
+
+    returnString += '-' + originToken
+    console.log(returnString)
     return returnString
   }
 }
