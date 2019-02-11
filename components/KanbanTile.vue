@@ -3,7 +3,9 @@
     <v-card draggable="true" @dragstart="dragStart()" @dragend="dragEnd()" class="tile-container">
       <v-expansion-panel>
         <v-expansion-panel-content>
-          <v-card-title slot="header" class="tile-title">{{ this.tile.title }}</v-card-title>
+          <v-card-title slot="header" class="tile-title">
+            <v-text-field v-model="tile.title" />
+          </v-card-title>
           <v-divider/>
           <v-card-text>
             <v-textarea auto-grow :value="this.tile.body"></v-textarea>

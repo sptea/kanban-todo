@@ -11,7 +11,7 @@
 
 <script>
 import KanbanTable from '~/components/KanbanTable.vue'
-import GetTestData from '~/common/getTestData.js'
+import ApiUtil from '~/common/apiUtil.js'
 
 export default {
   components: {
@@ -21,14 +21,8 @@ export default {
     return {}
   },
   async asyncData({ store }) {
-    const testRowList = await GetTestData.getTestRowList()
-    const testTileList = await GetTestData.getTestTileList()
-    const originToken = await GetTestData.getTestOriginToken()
-    testRowList.forEach(row => (row.isOver = false))
-
-    store.dispatch('row/setRowList', testRowList)
-    store.dispatch('tile/setTileList', testTileList)
-    store.dispatch('access/setOriginToken', originToken)
+    await ApiUtil.getOriginToken(store)
+    await ApiUtil.getBoard(store)
   }
 }
 </script>

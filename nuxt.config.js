@@ -37,6 +37,7 @@ module.exports = {
   modules: [
     // Doc: https://github.com/nuxt-community/axios-module#usage
     '@nuxtjs/axios',
+    '@nuxtjs/proxy',
     '@nuxtjs/vuetify'
   ],
   /*
@@ -45,7 +46,13 @@ module.exports = {
   axios: {
     // See https://github.com/nuxt-community/axios-module#options
   },
-
+  /*
+  * Proxy configuration
+  * TODO: to find out the way to change proxy setting by environment (dev, prod)
+  */
+  proxy: {
+    '/api': 'http://localhost:8080'
+  },
   /*
   ** Build configuration
   */

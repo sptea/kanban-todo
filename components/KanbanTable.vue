@@ -19,7 +19,9 @@
       @dragleave="dragLeave(row.rowId)"
     >
       <v-toolbar color="deep-orange" dark dense>
-        <v-toolbar-title>{{row.title}}</v-toolbar-title>
+        <v-toolbar-title>
+          <v-text-field v-model="row.title" />
+        </v-toolbar-title>
         <v-spacer/>
         <v-btn icon @click="tileCreationDialog=true;tileCreationData.rowId=row.rowId">
           <v-icon>add_circle_outline</v-icon>
