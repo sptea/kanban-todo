@@ -17,12 +17,8 @@ export default {
   components: {
     KanbanTable
   },
-  data() {
-    return {}
-  },
   async asyncData({ store }) {
-    await ApiUtil.getOriginToken(store)
-    await ApiUtil.getBoard(store)
+    ApiUtil.setOriginToken(store) // TODO Shouldnt be called here
   }
 }
 </script>

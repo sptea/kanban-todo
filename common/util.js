@@ -6,8 +6,7 @@ export default {
     for (let i = 0; i < length; i++)
       returnString += charSet[Math.floor(Math.random() * charSet.length)]
 
-    returnString += '-' + originToken
-    console.log(returnString)
+    returnString = originToken + '-' + returnString
     return returnString
   }
 }

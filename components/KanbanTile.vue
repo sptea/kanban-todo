@@ -4,7 +4,7 @@
       <v-expansion-panel>
         <v-expansion-panel-content>
           <v-card-title slot="header" class="tile-title">
-            <v-text-field v-model="tile.title" />
+            <v-text-field v-model="tile.title"/>
           </v-card-title>
           <v-divider/>
           <v-card-text>
@@ -47,14 +47,13 @@ export default {
   },
   methods: {
     dragStart() {
-      this.$store.dispatch('tile/setDraggingTileId', this.tile.tileId)
+      this.$emit('dragStartTile', this.tile.tileId)
     },
     dragEnd() {
-      this.$store.dispatch('row/unsetAllRowOver')
-      this.$store.dispatch('tile/setDraggingTileId', null)
+      this.$emit('dragEndTile')
     },
     deleteTile() {
-      this.$store.dispatch('tile/deleteTileByTileId', this.tile.tileId)
+      this.$emit('deleteTile', this.tile.tileId)
     }
   }
 }

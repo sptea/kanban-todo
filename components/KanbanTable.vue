@@ -2,7 +2,8 @@
   <div>
     <v-toolbar dense>
       <v-spacer/>
-      <v-btn color="deep-orange" @click="rowCreationDialog=true" dark>Add row</v-btn>
+      <v-btn color="deep-orange" @click="saveBoard()" dark>test</v-btn>
+      <v-btn color="deep-orange" @click="dialog.rowCreation=true" dark>Add row</v-btn>
     </v-toolbar>
 
     <v-divider/>
@@ -20,13 +21,13 @@
     >
       <v-toolbar color="deep-orange" dark dense>
         <v-toolbar-title>
-          <v-text-field v-model="row.title" />
+          <v-text-field v-model="row.title"/>
         </v-toolbar-title>
         <v-spacer/>
-        <v-btn icon @click="tileCreationDialog=true;tileCreationData.rowId=row.rowId">
+        <v-btn icon @click="dialog.tileCreation=true;dialog.tileCreationData.rowId=row.rowId">
           <v-icon>add_circle_outline</v-icon>
         </v-btn>
-        <v-btn icon @click="rowDeletionDialog=true;rowDeletionDialogData=row">
+        <v-btn icon @click="dialog.rowDeletion=true;dialog.rowDeletionData=row">
           <v-icon>delete_outline</v-icon>
         </v-btn>
       </v-toolbar>
@@ -35,49 +36,56 @@
         v-for="tile in getTilesInRow(row.rowId)"
         :key="tile.tileId"
         class="tile"
+        @dragStartTile="dragStartTile(tile.tileId)"
+        @dragEndTile="dragEndTile()"
+        @deleteTile="deleteTile(tile.tileId)"
       />
     </v-card>
 
-    <v-dialog v-model="rowCreationDialog" persistent max-width="600px">
+    <v-dialog v-model="dialog.rowCreation" persistent max-width="600px">
       <v-card>
         <v-card-title>
           <span class="headline">Add Row</span>
         </v-card-title>
         <v-card-text>
-          <v-text-field label="Title" v-model="rowCreationData.rowTitle"/>
+          <v-text-field label="Title" v-model="dialog.rowCreationData.rowTitle"/>
         </v-card-text>
         <v-card-actions>
           <v-spacer/>
-          <v-btn color="blue darken-1" flat @click="createRow();rowCreationDialog = false">Create</v-btn>
-          <v-btn color="blue darken-1" flat @click="rowCreationDialog = false">Cancel</v-btn>
+          <v-btn color="blue darken-1" flat @click="createRow();dialog.rowCreation = false">Create</v-btn>
+          <v-btn color="blue darken-1" flat @click="dialog.rowCreation = false">Cancel</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="tileCreationDialog" persistent max-width="600px">
+    <v-dialog v-model="dialog.tileCreation" persistent max-width="600px">
       <v-card>
         <v-card-title>
           <span class="headline">Add Task</span>
         </v-card-title>
         <v-card-text>
-          <v-text-field label="Title" v-model="tileCreationData.title"/>
+          <v-text-field label="Title" v-model="dialog.tileCreationData.title"/>
         </v-card-text>
         <v-card-actions>
           <v-spacer/>
-          <v-btn color="blue darken-1" flat @click="createTile();tileCreationDialog = false">Create</v-btn>
-          <v-btn color="blue darken-1" flat @click="tileCreationDialog = false">Cancel</v-btn>
+          <v-btn color="blue darken-1" flat @click="createTile();dialog.tileCreation = false">Create</v-btn>
+          <v-btn color="blue darken-1" flat @click="dialog.tileCreation = false">Cancel</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="rowDeletionDialog" max-width="290">
+    <v-dialog v-model="dialog.rowDeletion" max-width="290">
       <v-card>
         <v-card-title class="headline">Confirm</v-card-title>
-        <v-card-text>Delete {{ rowDeletionDialogData.title }} ?</v-card-text>
+        <v-card-text>Delete {{ dialog.rowDeletionData.title }} ?</v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="green darken-1" flat="flat" @click="deleteRow();rowDeletionDialog = false">Delete</v-btn>
-          <v-btn color="green darken-1" flat="flat" @click="rowDeletionDialog = false">Cancel</v-btn>
+          <v-btn
+            color="green darken-1"
+            flat="flat"
+            @click="deleteRow();dialog.rowDeletion = false"
+          >Delete</v-btn>
+          <v-btn color="green darken-1" flat="flat" @click="dialog.rowDeletion = false">Cancel</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -86,6 +94,8 @@
 
 <script>
 import KanbanTile from '~/components/KanbanTile.vue'
+import ApiUtil from '~/common/apiUtil.js'
+import Util from '~/common/util.js'
 
 export default {
   components: {
@@ -93,25 +103,29 @@ export default {
   },
   data() {
     return {
-      rowCreationDialog: false,
-      rowCreationData: { oritinToken: null },
-      rowDeletionDialog: false,
-      rowDeletionDialogData: {},
-      tileCreationDialog: false,
-      tileCreationData: { oritinToken: null }
+      dialog: {
+        rowCreation: false,
+        rowCreationData: {},
+        rowDeletion: false,
+        rowDeletionData: {},
+        tileCreation: false,
+        tileCreationData: {}
+      },
+      draggingTileId: null,
+      rowList: [],
+      tileList: []
     }
+  },
+  async mounted() {
+    const board = await ApiUtil.getBoard()
+    this.rowList = board.rowList
+    this.tileList = board.tileList
   },
   computed: {
     rowStyle() {
       return {
         width: `${this.rowRadio}%`
       }
-    },
-    rowList() {
-      return this.$store.state.row.rowList
-    },
-    tileList() {
-      return this.$store.state.tile.tileList
     },
     rowRadio() {
       const percent = this.rowList ? 100 / this.rowList.length : 100
@@ -124,37 +138,66 @@ export default {
       return filteredTileList
     },
     onDrop(rowId) {
-      this.$store.dispatch('tile/moveTileToTargetRow', rowId)
+      this.tileList.find(
+        tile => tile.tileId === this.draggingTileId
+      ).rowId = rowId
+      this.dragEndTile()
     },
     dragEnter(rowId) {
-      this.$store.dispatch('row/setRowOver', rowId)
+      this.rowList.find(row => row.rowId === rowId).isOver = true
     },
     dragLeave(rowId) {
-      this.$store.dispatch('row/unsetRowOver', rowId)
+      this.rowList.find(row => row.rowId === rowId).isOver = false
     },
-    dragEnd() {
+    dragEndTile() {
       this.rowList.forEach(row => (row.isOver = false))
+      this.draggingTileId = null
     },
     deleteRow() {
-      this.$store.dispatch(
-        'tile/deleteTileByRowId',
-        this.rowDeletionDialogData.rowId
-      )
-      this.$store.dispatch(
-        'row/deleteRowByRowId',
-        this.rowDeletionDialogData.rowId
-      )
-      this.rowDeletionDialogData = {}
+      const rowId = this.dialog.rowDeletionData.rowId
+      this.tileList = this.tileList.filter(tile => tile.rowId !== rowId)
+      this.rowList = this.rowList.filter(row => row.rowId !== rowId)
+      this.dialog.rowDeletionData = {}
     },
     createRow() {
-      this.rowCreationData.originToken = this.$store.state.access.originToken
-      this.$store.dispatch('row/createRow', this.rowCreationData)
-      this.rowCreationData = {}
+      let rowId = null
+      do {
+        rowId = Util.createRandomString(5, this.$store.state.access.originToken)
+      } while (this.rowList.filter(row => row.rowId === rowId).length !== 0)
+
+      this.rowList.push({
+        title: this.dialog.rowCreationData.rowTitle,
+        rowId: rowId
+      })
+      this.dialog.rowCreationData = {}
     },
     createTile() {
-      this.tileCreationData.originToken = this.$store.state.access.originToken
-      this.$store.dispatch('tile/createTile', this.tileCreationData)
-      this.tileCreationData = {}
+      let tileId = null
+      do {
+        tileId = Util.createRandomString(
+          5,
+          this.$store.state.access.originToken
+        )
+      } while (
+        this.tileList.filter(tile => tile.tileId === tileId).length !== 0
+      )
+      this.tileList.push({
+        title: this.dialog.tileCreationData.title,
+        tileId: tileId,
+        rowId: this.dialog.tileCreationData.rowId,
+        body: ''
+      })
+      this.dialog.tileCreationData = {}
+    },
+    dragStartTile(tileId) {
+      this.draggingTileId = tileId
+    },
+    deleteTile(tileId) {
+      this.tileList = this.tileList.filter(tile => tile.tileId !== tileId)
+    },
+    saveBoard() {
+      console.log('save')
+      ApiUtil.postBoard(this.rowList, this.tileList)
     }
   }
 }
