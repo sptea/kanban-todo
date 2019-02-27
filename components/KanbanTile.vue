@@ -4,11 +4,12 @@
       <v-expansion-panel>
         <v-expansion-panel-content>
           <v-card-title slot="header" class="tile-title">
-            <v-text-field v-model="tile.title"/>
+            {{tile.title}}
+            <!--            <v-text-field v-model="tile.title"/>-->
           </v-card-title>
           <v-divider/>
           <v-card-text>
-            <v-textarea auto-grow :value="this.tile.body"></v-textarea>
+            <v-textarea auto-grow v-model="tile.text"></v-textarea>
             <v-btn icon @click="tileDeletionDialog = true">
               <v-icon>delete_outline</v-icon>
             </v-btn>

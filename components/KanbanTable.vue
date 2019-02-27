@@ -2,7 +2,6 @@
   <div>
     <v-toolbar dense>
       <v-spacer/>
-      <v-btn color="deep-orange" @click="saveBoard()" dark>test</v-btn>
       <v-btn color="deep-orange" @click="dialog.rowCreation=true" dark>Add row</v-btn>
     </v-toolbar>
 
@@ -113,13 +112,29 @@ export default {
       },
       draggingTileId: null,
       rowList: [],
-      tileList: []
+      tileList: [],
+      isChange: false
+    }
+  },
+  watch: {
+    rowList: {
+      handler: function(val, oldVal) {
+        this.isChange = true
+      },
+      deep: true
+    },
+    tileList: {
+      handler: function(val, oldVal) {
+        this.isChange = true
+      },
+      deep: true
     }
   },
   async mounted() {
     const board = await ApiUtil.getBoard()
     this.rowList = board.rowList
     this.tileList = board.tileList
+    setInterval(this.saveBoard, 3000)
   },
   computed: {
     rowStyle() {
@@ -196,8 +211,10 @@ export default {
       this.tileList = this.tileList.filter(tile => tile.tileId !== tileId)
     },
     saveBoard() {
-      console.log('save')
-      ApiUtil.postBoard(this.rowList, this.tileList)
+      if (this.isChange) {
+        ApiUtil.postBoard(this.rowList, this.tileList)
+      }
+      this.isChange = false
     }
   }
 }
