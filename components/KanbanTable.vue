@@ -2,15 +2,15 @@
   <div>
     <v-toolbar dense>
       <v-spacer/>
-      <v-btn color="deep-orange" @click="dialog.rowCreation=true" dark>Add row</v-btn>
+      <v-btn color="teal lighten-1" @click="dialog.rowCreation=true" dark>Add row</v-btn>
     </v-toolbar>
 
     <v-divider/>
     <v-card
       v-for="row in this.rowList"
       :key="row.rowId"
-      class="row amber lighten-5"
-      :class="{'amber lighten-4': row.isOver}"
+      class="row blue-grey lighten-5"
+      :class="{'blue-grey lighten-4': row.isOver}"
       :style="rowStyle"
       @dragover.prevent
       @dragenter.prevent
@@ -18,7 +18,7 @@
       @dragenter="dragEnter(row.rowId)"
       @dragleave="dragLeave(row.rowId)"
     >
-      <v-toolbar color="deep-orange" dark dense>
+      <v-toolbar color="teal lighten-1" dark dense>
         <v-toolbar-title>
           <v-text-field v-model="row.title"/>
         </v-toolbar-title>

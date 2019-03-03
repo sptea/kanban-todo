@@ -1,11 +1,14 @@
 <template>
   <v-app>
-    <v-toolbar fixed dense scroll-off-screen class="amber darken-3">
+    <v-toolbar fixed dense scroll-off-screen class="blue-grey">
       <v-spacer/>
     </v-toolbar>
-    <v-card class="container amber lighten-3">
+    <v-card class="container blue-grey lighten-5">
       <kanban-table/>
     </v-card>
+    <v-footer class="blue-grey">
+      <v-spacer></v-spacer>
+    </v-footer>
   </v-app>
 </template>
 

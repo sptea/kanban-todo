@@ -4,8 +4,7 @@
       <v-expansion-panel>
         <v-expansion-panel-content>
           <v-card-title slot="header" class="tile-title">
-            {{tile.title}}
-            <!--            <v-text-field v-model="tile.title"/>-->
+            <input type="text" v-model="tile.title">
           </v-card-title>
           <v-divider/>
           <v-card-text>
@@ -68,5 +67,6 @@ export default {
 
 .tile-title {
   height: 1em;
+  padding: 0;
 }
 </style>
